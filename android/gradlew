@@ -1,0 +1,253 @@
+#!/bin/sh
+
+#
+# Copyright © 2015 the original authors.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+##############################################################################
+#
+#   由 Gradle 生成的 POSIX 启动脚本。
+#
+#   运行须知：
+#
+#   (1) 需要符合 POSIX 的 shell。如果 /bin/sh 不符合规范，
+#       但已安装 ksh 或 bash 等兼容 shell，
+#       可在完整命令行前加上 shell 名称，
+#       例如：
+#
+#           ksh Gradle
+#
+#       Busybox 等精简 shell 无法运行本脚本，因为脚本需要
+#       下列全部 POSIX shell 特性：
+#         * 函数；
+#         * 展开表达式 «$var», «${var}», «${var:-default}», «${var+SET}»,
+#           «${var#prefix}», «${var%suffix}», 以及 «$( cmd )»;
+#         * 能检查退出状态的复合命令，尤其是 «case»；
+#         * «command»、«set» 和 «ulimit» 等内置命令。
+#
+#   修改须知：
+#
+#   (2) 本脚本面向所有 POSIX shell，因此不使用
+#       Bash、Ksh 等扩展特性，尤其避免使用数组。
+#
+#       将多个参数拼成空格分隔字符串的传统写法，
+#       容易引发已有充分记录的错误和安全问题。
+#       为此，本脚本主要通过逐步向参数列表累积选项
+#       并最终将 "$@" 传给 Java 来规避此类问题。
+#
+#       对继承的环境变量 DEFAULT_JVM_OPTS、JAVA_OPTS、
+#       GRADLE_OPTS 所需的分词操作采用显式处理；
+#       详情见行内注释。
+#
+#       脚本包含 AIX、CygWin、Darwin、MinGW、NonStop 等
+#       操作系统的兼容处理。
+#
+#   (3) 本脚本由 Gradle 项目中的 Groovy 模板生成：
+#       https://github.com/gradle/gradle/blob/HEAD/platforms/jvm/plugins-application/src/main/resources/org/gradle/api/internal/plugins/unixStartScript.txt
+#       模板位于 Gradle 项目内。
+#
+#       Gradle 项目地址：https://github.com/gradle/gradle/。
+#
+##############################################################################
+
+# 尝试设置 APP_HOME。
+
+# 解析链接：$0 本身可能是符号链接。
+app_path=$0
+
+# 处理多级符号链接需要循环解析。
+while
+    APP_HOME=${app_path%"${app_path##*/}"}  # 保留末尾的 /；没有路径前缀时为空。
+    [ -h "$app_path" ]
+do
+    ls=$( ls -ld "$app_path" )
+    link=${ls#*' -> '}
+    case $link in             #(
+      /*)   app_path=$link ;; #(
+      *)    app_path=$APP_HOME$link ;;
+    esac
+done
+
+# 此变量通常未被使用。
+# shellcheck disable=SC2034
+APP_BASE_NAME=${0##*/}
+# 丢弃 cd 标准输出，避免已设置 $CDPATH 时干扰结果 (https://github.com/gradle/gradle/issues/25036)
+APP_HOME=$( cd -P "${APP_HOME:-./}" > /dev/null && printf '%s\n' "$PWD" ) || exit
+
+# 使用最大可用值，也可以将 MAX_FD 设置为非 -1 的指定值。
+MAX_FD=maximum
+
+# 将传入的警告参数输出到标准错误。
+warn () {
+    echo "$*"
+} >&2
+
+# 将传入的错误信息输出到标准错误，并以状态码 1 终止脚本。
+die () {
+    echo
+    echo "$*"
+    echo
+    exit 1
+} >&2
+
+# 操作系统兼容标记，值必须为 'true' 或 'false'。
+cygwin=false
+msys=false
+darwin=false
+nonstop=false
+case "$( uname )" in                #(
+  CYGWIN* )         cygwin=true  ;; #(
+  Darwin* )         darwin=true  ;; #(
+  MSYS* | MINGW* )  msys=true    ;; #(
+  NONSTOP* )        nonstop=true ;;
+esac
+
+CLASSPATH="\\\"\\\""
+
+
+# 确定用于启动 JVM 的 Java 命令。
+if [ -n "$JAVA_HOME" ] ; then
+    if [ -x "$JAVA_HOME/jre/sh/java" ] ; then
+        # AIX 上的 IBM JDK 将可执行文件放在特殊位置。
+        JAVACMD=$JAVA_HOME/jre/sh/java
+    else
+        JAVACMD=$JAVA_HOME/bin/java
+    fi
+    if [ ! -x "$JAVACMD" ] ; then
+        die "ERROR: JAVA_HOME is set to an invalid directory: $JAVA_HOME
+
+Please set the JAVA_HOME variable in your environment to match the
+location of your Java installation."
+    fi
+else
+    JAVACMD=java
+    if ! command -v java >/dev/null 2>&1
+    then
+        die "ERROR: JAVA_HOME is not set and no 'java' command could be found in your PATH.
+
+Please set the JAVA_HOME variable in your environment to match the
+location of your Java installation."
+    fi
+fi
+
+# 在系统允许时提高文件描述符数量上限。
+if ! "$cygwin" && ! "$darwin" && ! "$nonstop" ; then
+    case $MAX_FD in #(
+      max*)
+        # POSIX sh 未定义 ulimit -H，因此需要检查执行结果。
+        # shellcheck disable=SC2039,SC3045
+        MAX_FD=$( ulimit -H -n ) ||
+            warn "Could not query maximum file descriptor limit"
+    esac
+    case $MAX_FD in  #(
+      '' | soft) :;; #(
+      *)
+        # POSIX sh 未定义 ulimit -n，因此需要检查执行结果。
+        # shellcheck disable=SC2039,SC3045
+        ulimit -n "$MAX_FD" ||
+            warn "Could not set maximum file descriptor limit to $MAX_FD"
+    esac
+fi
+
+# 按逆序组织 Java 命令的全部参数：
+#   * 命令行参数；
+#   * 主类名；
+#   * -classpath
+#   * -D...appname 设置；
+#   * --module-path（仅在需要时）；
+#   * DEFAULT_JVM_OPTS、JAVA_OPTS 和 GRADLE_OPTS 环境变量。
+
+# 在 Cygwin 或 MSYS 下运行 Java 前，将路径转换为 Windows 格式。
+if "$cygwin" || "$msys" ; then
+    APP_HOME=$( cygpath --path --mixed "$APP_HOME" )
+    CLASSPATH=$( cygpath --path --mixed "$CLASSPATH" )
+
+    JAVACMD=$( cygpath --unix "$JAVACMD" )
+
+    # 转换参数，兼容仅使用 /bin/sh 的限制。
+    for arg do
+        if
+            case $arg in                                #(
+              -*)   false ;;                            # 不修改选项 #(
+              /?*)  t=${arg#/} t=/${t%%/*}              # 看起来是 POSIX 文件路径。
+                    [ -e "$t" ] ;;                      #(
+              *)    false ;;
+            esac
+        then
+            arg=$( cygpath --path --ignore --mixed "$arg" )
+        fi
+        # 按参数总数循环轮转参数列表，
+        # 使每个参数回到初始位置，
+        # 同时保留可能发生的路径转换。
+        #
+        # 注意：`for` 循环在开始前就确定遍历列表，
+        # 因此在此修改位置参数不会改变遍历次数，
+        # 也不会改变 `arg` 中当前遍历的值。
+        shift                   # 移除旧参数。
+        set -- "$@" "$arg"      # 追加替换后的参数。
+    done
+fi
+
+
+# 在此设置默认 JVM 选项，也可通过 JAVA_OPTS 和 GRADLE_OPTS 传入。
+DEFAULT_JVM_OPTS='"-Xmx64m" "-Xms64m"'
+
+# 收集 Java 命令的全部参数：
+#   * DEFAULT_JVM_OPTS、JAVA_OPTS 和 optsEnvironmentVar 不允许包含 shell 片段，
+#     其中的 shell 特殊字符将被转义。
+#   * 例如，不应期望其中的 ${Hostname} 被展开；
+#     它会在命令行中作为字面量 '${Hostname}' 处理。
+
+set -- \
+        "-Dorg.gradle.appname=$APP_BASE_NAME" \
+        -classpath "$CLASSPATH" \
+        -jar "$APP_HOME/gradle/wrapper/gradle-wrapper.jar" \
+        "$@"
+
+# 如果 "xargs" 不可用则终止。
+if ! command -v xargs >/dev/null 2>&1
+then
+    die "xargs is not available"
+fi
+
+# 使用 "xargs" 解析带引号的参数。
+#
+# 使用 -n1 时每行输出一个参数，并移除引号和反斜杠。
+#
+# 在 Bash 中可以直接使用：
+#
+#   readarray ARGS < <( xargs -n1 <<<"$var" ) &&
+#   set -- "${ARGS[@]}" "$@"
+#
+# 但 POSIX shell 缺少上述数组和替换语法，因此这里改为
+# 用 sed 逐行处理每个参数，为可能具有 shell 特殊含义的字符
+# 添加反斜杠转义，再通过 eval 还原这些参数，
+# 同时保持参数边界，并将整个过程
+# 封装为一条 "set" 语句。
+#
+# 如果这些变量中包含换行符或未配对的引号，
+# 上述处理将无法正常工作。
+#
+
+eval "set -- $(
+        printf '%s\n' "$DEFAULT_JVM_OPTS $JAVA_OPTS $GRADLE_OPTS" |
+        xargs -n1 |
+        sed ' s~[^-[:alnum:]+,./:=@_]~\\&~g; ' |
+        tr '\n' ' '
+    )" '"$@"'
+
+exec "$JAVACMD" "$@"

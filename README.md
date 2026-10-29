@@ -1,6 +1,13 @@
 ScreamRouter
 ============
 
+Android 客户端源码
+------------------
+
+本仓库已将 [ScreamFromAndroid](https://github.com/gversluis/ScreamFromAndroid) 源码嵌入 [android/](android/) 目录。构建、连接 ScreamRouter 和上游来源说明见 [android/UPSTREAM.md](android/UPSTREAM.md)。
+
+本仓库的推送地址为 `git@github.com:Charron-Lin/screamrouter.git`；原作者仓库保留为 `upstream`。
+
 <p>
   <a href="https://img.shields.io/badge/License-AGPL--3.0-blue.svg"><img src="https://img.shields.io/badge/License-AGPL--3.0-blue.svg" alt="License: AGPL-3.0"/></a>
   <a href="https://img.shields.io/badge/Python-3.10%2B-3776AB"><img src="https://img.shields.io/badge/Python-3.10%2B-3776AB" alt="Python 3.10+"/></a>
@@ -44,7 +51,7 @@ docker run -d --network host \
   -v $PWD/cert:/app/cert \
   --name screamrouter \
   netham45/screamrouter:latest
-# Open https://<host>/site (self‑signed TLS on first run)
+# 打开 https://<host>/site（首次运行使用自签名 TLS 证书）
 ```
 
 Portable (port mapping; multicast discovery limited):

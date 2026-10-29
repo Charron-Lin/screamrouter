@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+   备份规则示例文件；按需取消注释并自定义。
+   参见 https://developer.android.com/guide/topics/data/autobackup
+   了解详细说明。
+   注意：上游模板标注本文件会在低于 API 31 的设备上被忽略；实际行为以 Android 备份配置规则为准。
+   参见 https://developer.android.com/about/versions/12/backup-restore
+-->
+<full-backup-content>
+    <!--
+   <include domain="sharedpref" path="."/>
+   <exclude domain="sharedpref" path="device.xml"/>
+-->
+</full-backup-content>
