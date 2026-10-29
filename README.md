@@ -6,7 +6,7 @@ Android 客户端源码
 
 本仓库已将 [ScreamFromAndroid](https://github.com/gversluis/ScreamFromAndroid) 源码嵌入 [android/](android/) 目录。构建、连接 ScreamRouter 和上游来源说明见 [android/UPSTREAM.md](android/UPSTREAM.md)。
 
-本仓库的推送地址为 `git@github.com:Charron-Lin/screamrouter.git`；原作者仓库保留为 `upstream`。
+本仓库仅关联自己的远程仓库 `origin`（`git@github.com:Charron-Lin/screamrouter.git`），保留原有 Git 提交历史，已取消原作者仓库的远程关联。
 
 <p>
   <a href="https://img.shields.io/badge/License-AGPL--3.0-blue.svg"><img src="https://img.shields.io/badge/License-AGPL--3.0-blue.svg" alt="License: AGPL-3.0"/></a>
